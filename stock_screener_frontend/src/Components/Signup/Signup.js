@@ -7,6 +7,7 @@ function Signup() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,13 +17,19 @@ function Signup() {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/users/', {
+      const response = await axios.post('http://localhost:3000/users', {
         email,
         password,
       });
 
       // Handle successful signup
       console.log('Signup successful', response.data);
+      setSuccessMessage('User created successfully! Redirecting to sign-in page...');
+      // Redirect to the sign-in page after 1.5 seconds
+
+      setTimeout(() => {
+        window.location.href = '/signin';
+      }, 1500);
     } catch (error) {
       // Check if error.response exists before accessing it
       if (error.response) {
@@ -64,6 +71,7 @@ function Signup() {
           required
         />
         {error && <p className="error-message">{error}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
         <button className="signup-button" type="submit">SIGNUP</button>
       </form>
     </div>

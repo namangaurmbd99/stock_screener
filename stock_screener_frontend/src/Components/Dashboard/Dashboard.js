@@ -27,9 +27,6 @@ function Dashboard() {
 
   return (
     <div>
-        {/* add links of Signin and Signup here */}
-        <a href="/signin">Signin</a>
-        <a href="/signup">Signup</a>
       <h1>Stock Dashboard</h1>
       {loading ? (
         <p>Loading...</p>
@@ -38,7 +35,7 @@ function Dashboard() {
           <thead>
             <tr>
               <th>Symbol</th>
-              <th>Company Name</th>
+              <th>Name</th>
               <th>Latest Price</th>
               <th>Change</th>
             </tr>
@@ -47,7 +44,7 @@ function Dashboard() {
             {stocks.map((stock) => (
               <tr key={stock.symbol}>
                 <td>{stock.symbol}</td>
-                <td>{stock.companyName}</td>
+                <td>{stock.name}</td>
                 <td>{stock.latestPrice}</td>
                 <td>{stock.change}</td>
               </tr>
