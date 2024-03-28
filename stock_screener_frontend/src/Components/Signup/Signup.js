@@ -1,44 +1,46 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { signupUser } from '../../api';
 import './Signup.css';
 
 function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const { email, password, confirmPassword } = formData;
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/users', {
-        email,
-        password,
-      });
+      // Call the signupUser function from the api module
+      await signupUser(email, password);
 
       // Handle successful signup
-      console.log('Signup successful', response.data);
       setSuccessMessage('User created successfully! Redirecting to sign-in page...');
       // Redirect to the sign-in page after 1.5 seconds
-
       setTimeout(() => {
         window.location.href = '/signin';
       }, 1500);
     } catch (error) {
-      // Check if error.response exists before accessing it
-      if (error.response) {
-        console.error('Signup failed', error.response.data);
-        setError(error.response.data.error || 'Signup failed');
-      } else {
-        console.error('Signup failed', error.message);
-        setError('Signup failed');
-      }
+      // Handle signup errors
+      console.error('Signup failed', error);
+      setError(error);
     }
   };
 
@@ -49,25 +51,28 @@ function Signup() {
         <input
           className="signup-input"
           type="email"
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
           required
         />
         <input
           className="signup-input"
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
           required
         />
         <input
           className="signup-input"
           type="password"
+          name="confirmPassword"
           placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          value={formData.confirmPassword}
+          onChange={handleChange}
           required
         />
         {error && <p className="error-message">{error}</p>}

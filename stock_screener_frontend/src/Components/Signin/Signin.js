@@ -1,35 +1,41 @@
+// Signin.js
+
 import React, { useState } from 'react';
-import axios from 'axios';
+import { loginUser } from '../../api';
 import './Signin.css';
 
-function Signin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function Signin({ setUser }) {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      // Perform login
-      const response = await axios.post('http://localhost:3000/users/login', {
-        email,
-        password,
-      });
+      const userData = await loginUser(formData.email, formData.password);
+      setUser(userData); // Update the user state with logged-in user data
 
-      // Handle successful login
-      console.log('Login successful', response.data);
+      // Store the user data in local storage
+      localStorage.setItem('user', JSON.stringify(userData));
+
       setSuccessMessage('Login successful! Redirecting to dashboard...');
-
-      // Redirect to the dashboard page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/';
       }, 1500);
-
     } catch (error) {
-      // Handle login errors
-      console.error('Login failed', error.response.data);
-      setError(error.response.data.error || 'Login failed');
+      console.error('Login failed', error);
+      setError(error);
     }
   };
 
@@ -40,17 +46,19 @@ function Signin() {
         <input
           className="signin-input"
           type="email"
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
           required
         />
         <input
           className="signin-input"
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
           required
         />
         {error && <p className="error-message">{error}</p>}
